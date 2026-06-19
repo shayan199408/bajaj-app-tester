@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bajaj App Testing Environment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F7F5;
+    --surface: #FFFFFF;
+    --surface2: #F2F2F0;
+    --border: rgba(0,0,0,0.10);
+    --border-strong: rgba(0,0,0,0.18);
+    --text: #1A1A1A;
+    --text-2: #555550;
+    --text-3: #999990;
+    --blue: #1D6FD8;
+    --blue-bg: #EAF2FF;
+    --blue-border: #B3D0F7;
+    --green: #2A8A4A;
+    --green-bg: #E8F5EC;
+    --green-border: #A8D8B8;
+    --red: #C93535;
+    --red-bg: #FDEAEA;
+    --red-border: #F3B3B3;
+    --amber: #B06A00;
+    --amber-bg: #FEF4E0;
+    --amber-border: #F5D898;
+    --live-red: #E53E3E;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', -apple-system, sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── Top Bar ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .topbar-logo-mark {
+    width: 28px; height: 28px;
+    background: #0052CC;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .topbar-logo-mark span {
+    color: white; font-weight: 700; font-size: 13px; letter-spacing: -0.5px;
+  }
+  .topbar-divider { width: 1px; height: 20px; background: var(--border-strong); margin: 0 4px; }
+  .topbar-env {
+    font-size: 12px; color: var(--text-3);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-family: var(--mono);
+  }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .topbar-clock {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-3);
+    letter-spacing: 0.5px;
+  }
+  .topbar-live-pill {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--red-bg);
+    border: 1px solid var(--red-border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--red);
+  }
+  .topbar-live-pill .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--live-red);
+    animation: blink 1.4s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── Layout ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    grid-template-rows: 1fr;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+  }
+
+  /* ── Left Panel ── */
+  .left-panel {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .panel-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-3);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* Platform Selector */
+  .platform-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .plat-tab {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 9px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    transition: all 0.15s;
+    font-family: var(--sans);
+  }
+  .plat-tab i { font-size: 17px; }
+  .plat-tab:hover { background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue); }
+  .plat-tab.active-ios { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+  .plat-tab.active-android { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+
+  /* URL Bar */
+  .url-row {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--text-2);
+    word-break: break-all;
+  }
+  .url-row i { color: var(--green); flex-shrink: 0; font-size: 14px; }
+
+  /* Stream Status */
+  .stream-status-row {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .stream-pill {
+    display: flex; align-items: center; gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .stream-pill.live { background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red); }
+  .stream-pill.rec { background: var(--surface2); border: 1px solid var(--border-strong); color: var(--text-3); }
+  .stream-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .stream-pill.live .dot { background: var(--live-red); animation: blink 1.4s infinite; }
+  .stream-pill.rec .dot { background: var(--text-3); }
+
+  /* Debug Buttons */
+  .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .dbg-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 9px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    font-family: var(--sans);
+    transition: all 0.13s;
+    width: 100%;
+  }
+  .dbg-btn i { font-size: 15px; color: var(--text-2); }
+  .dbg-btn:hover { background: #EFEFED; border-color: #BBBBB5; }
+  .dbg-btn:active { transform: scale(0.97); }
+  .dbg-btn.green { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+  .dbg-btn.green i { color: var(--green); }
+  .dbg-btn.red { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+  .dbg-btn.red i { color: var(--red); }
+  .dbg-btn.amber { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber); }
+  .dbg-btn.amber i { color: var(--amber); }
+  .dbg-btn.blue { background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue); }
+  .dbg-btn.blue i { color: var(--blue); }
+  .dbg-btn.wide { grid-column: 1 / -1; }
+
+  /* Console Log */
+  .log-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+  }
+  .log-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .log-header-left { display: flex; align-items: center; gap: 8px; }
+  .log-count {
+    background: var(--blue-bg);
+    color: var(--blue);
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 7px;
+    min-width: 20px;
+    text-align: center;
+  }
+  .log-actions { display: flex; gap: 4px; }
+  .log-action-btn {
+    background: none; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 4px 8px;
+    cursor: pointer; font-size: 11px; color: var(--text-2);
+    font-family: var(--sans);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .log-action-btn:hover { background: var(--surface2); }
+  .log-action-btn i { font-size: 13px; }
+
+  .log-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+    font-family: var(--mono);
+    font-size: 11.5px;
+  }
+  .log-entry {
+    display: flex; align-items: flex-start; gap: 0;
+    padding: 3px 20px;
+    border-left: 2px solid transparent;
+    transition: background 0.1s;
+  }
+  .log-entry:hover { background: var(--surface2); }
+  .log-entry.err { border-left-color: var(--red); }
+  .log-entry.ok { border-left-color: var(--green); }
+  .log-entry.warn { border-left-color: var(--amber); }
+  .log-entry.info { border-left-color: var(--blue); }
+  .log-ts { color: var(--text-3); min-width: 68px; font-size: 11px; padding-top: 1px; flex-shrink: 0; }
+  .log-level { font-size: 10px; font-weight: 600; min-width: 36px; padding-top: 2px; flex-shrink: 0; letter-spacing: 0.3px; }
+  .log-level.err { color: var(--red); }
+  .log-level.ok { color: var(--green); }
+  .log-level.warn { color: var(--amber); }
+  .log-level.info { color: var(--blue); }
+  .log-level.dbg { color: var(--text-3); }
+  .log-msg { color: var(--text); line-height: 1.5; word-break: break-word; }
+  .log-msg.err { color: var(--red); }
+  .log-msg.warn { color: var(--amber); }
+
+  /* ── Right Panel: Device ── */
+  .right-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #EEECEA;
+    background-image: radial-gradient(circle, #DCDAD7 1px, transparent 1px);
+    background-size: 20px 20px;
+    overflow: auto;
+    padding: 40px 24px;
+    position: relative;
+  }
+
+  .device-outer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Info strip above device */
+  .device-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px;
+    background: rgba(255,255,255,0.8);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: var(--text-2);
+    backdrop-filter: blur(6px);
+  }
+  .device-meta strong { color: var(--text); font-weight: 600; }
+  .device-meta .sep { color: var(--border-strong); }
+
+  /* iOS Device */
+  .device-ios {
+    width: 340px;
+    background: #1C1C1E;
+    border-radius: 52px;
+    padding: 12px 10px;
+    border: 2px solid #3A3A3C;
+    box-shadow: 0 0 0 1px #0A0A0B, 0 30px 80px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+    position: relative;
+  }
+  .ios-side-btn {
+    position: absolute;
+    right: -4px;
+    top: 110px;
+    width: 4px; height: 68px;
+    background: #3A3A3C;
+    border-radius: 0 3px 3px 0;
+  }
+  .ios-vol-up {
+    position: absolute;
+    left: -4px; top: 110px;
+    width: 4px; height: 36px;
+    background: #3A3A3C;
+    border-radius: 3px 0 0 3px;
+  }
+  .ios-vol-dn {
+    position: absolute;
+    left: -4px; top: 156px;
+    width: 4px; height: 36px;
+    background: #3A3A3C;
+    border-radius: 3px 0 0 3px;
+  }
+  .ios-mute {
+    position: absolute;
+    left: -4px; top: 78px;
+    width: 4px; height: 24px;
+    background: #3A3A3C;
+    border-radius: 3px 0 0 3px;
+  }
+  .ios-notch {
+    width: 110px; height: 28px;
+    background: #1C1C1E;
+    border-radius: 0 0 20px 20px;
+    margin: 0 auto 0;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    position: relative; z-index: 2;
+  }
+  .ios-cam { width: 10px; height: 10px; border-radius: 50%; background: #2C2C2E; border: 1.5px solid #3A3A3C; }
+  .ios-speaker-pill { width: 36px; height: 5px; background: #2A2A2C; border-radius: 3px; }
+
+  /* Android Device */
+  .device-android {
+    width: 340px;
+    background: #1C1C1E;
+    border-radius: 30px;
+    padding: 10px 9px;
+    border: 2px solid #3A3A3C;
+    box-shadow: 0 0 0 1px #0A0A0B, 0 30px 80px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    position: relative;
+  }
+  .android-punch-hole-bar {
+    height: 26px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .android-cam { width: 9px; height: 9px; border-radius: 50%; background: #2C2C2E; border: 1.5px solid #555; }
+
+  /* Shared Screen */
+  .device-screen {
+    background: #fff;
+    border-radius: 38px;
+    overflow: hidden;
+    position: relative;
+  }
+  .device-android .device-screen { border-radius: 20px; }
+
+  .screen-statusbar {
+    height: 26px;
+    background: #000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px;
+    font-size: 11px;
+    color: #fff;
+    font-family: var(--sans);
+    font-weight: 500;
+  }
+  .screen-statusbar-icons { display: flex; align-items: center; gap: 5px; }
+  .screen-statusbar-icons i { font-size: 13px; }
+
+  .webview-chrome {
+    background: #F5F5F5;
+    border-bottom: 1px solid #DDD;
+    padding: 6px 10px;
+    display: flex; align-items: center; gap: 6px;
+    height: 40px;
+  }
+  .webview-chrome-btn { background: none; border: none; cursor: pointer; color: #555; display: flex; align-items: center; font-size: 15px; }
+  .webview-urlbar {
+    flex: 1;
+    background: #E8E8E8;
+    border-radius: 8px;
+    padding: 4px 9px;
+    font-size: 10px;
+    font-family: var(--mono);
+    color: #444;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .webview-urlbar i { font-size: 12px; color: var(--green); flex-shrink: 0; }
+
+  .webview-content {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #111;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Stream content */
+  .stream-area {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative;
+    gap: 12px;
+  }
+  .stream-bg-lines {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 8px);
+    pointer-events: none;
+  }
+  .stream-icon-wrap {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .stream-icon-wrap i { font-size: 26px; color: rgba(255,255,255,0.6); }
+  .stream-label { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
+  .stream-sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+  .stream-badge-live {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--live-red);
+    color: #fff;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: flex; align-items: center; gap: 4px;
+    letter-spacing: 0.5px;
+  }
+  .stream-badge-live .dot { width: 5px; height: 5px; border-radius: 50%; background: #fff; animation: blink 1.4s infinite; }
+  .stream-badge-rec {
+    position: absolute; top: 14px; left: 14px;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.6);
+    font-size: 10px; font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .stream-time {
+    position: absolute; bottom: 14px; right: 14px;
+    font-family: var(--mono); font-size: 11px;
+    color: rgba(255,255,255,0.5);
+  }
+  .stream-quality {
+    position: absolute; top: 14px; right: 14px;
+    font-size: 10px; font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    font-family: var(--mono);
+  }
+
+  /* Loading overlay */
+  .loading-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px;
+    z-index: 10;
+  }
+  .spinner {
+    width: 28px; height: 28px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 12px; color: rgba(255,255,255,0.6); font-family: var(--mono); }
+
+  /* Error overlay */
+  .error-overlay {
+    position: absolute; inset: 0;
+    background: #1a0a0a;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; padding: 20px;
+    z-index: 10;
+  }
+  .error-overlay i { font-size: 36px; color: var(--red); }
+  .error-title { font-size: 14px; font-weight: 600; color: #fff; text-align: center; }
+  .error-code { font-size: 11px; color: rgba(255,255,255,0.4); font-family: var(--mono); text-align: center; }
+
+  /* iOS home bar */
+  .ios-home { height: 28px; display: flex; align-items: center; justify-content: center; }
+  .ios-pill { width: 88px; height: 5px; background: rgba(255,255,255,0.25); border-radius: 3px; }
+
+  /* Android nav */
+  .android-nav { height: 32px; background: #000; display: flex; align-items: center; justify-content: center; gap: 36px; }
+  .android-nav-btn { background: none; border: 1.5px solid rgba(255,255,255,0.3); cursor: pointer; border-radius: 3px; }
+  .android-nav-btn.circle { width: 18px; height: 18px; border-radius: 50%; }
+  .android-nav-btn.triangle { width: 0; height: 0; border-top: 9px solid transparent; border-bottom: 9px solid transparent; border-right: 13px solid rgba(255,255,255,0.3); border-left: none; }
+  .android-nav-btn.square { width: 16px; height: 16px; }
+
+  /* Network badge */
+  .net-badge {
+    position: absolute; bottom: 14px; left: 14px;
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .net-badge.online { background: rgba(42,138,74,0.2); color: #5BD47E; border: 1px solid rgba(42,138,74,0.3); }
+  .net-badge.slow { background: rgba(176,106,0,0.2); color: #F5C842; border: 1px solid rgba(176,106,0,0.3); }
+  .net-badge.offline { background: rgba(201,53,53,0.2); color: #F08080; border: 1px solid rgba(201,53,53,0.3); }
+  .net-badge i { font-size: 12px; }
+
+  /* Scrollbar */
+  .log-body::-webkit-scrollbar { width: 4px; }
+  .log-body::-webkit-scrollbar-track { background: transparent; }
+  .log-body::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+  /* Share banner */
+  .share-banner {
+    position: fixed; top: 56px; left: 0; right: 0;
+    background: var(--blue-bg);
+    border-bottom: 1px solid var(--blue-border);
+    padding: 9px 24px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; color: var(--blue);
+    z-index: 50;
+    transition: transform 0.3s;
+  }
+  .share-banner i { font-size: 15px; }
+  .share-banner strong { font-weight: 600; }
+  .share-banner-close {
+    margin-left: auto; background: none; border: none; cursor: pointer;
+    color: var(--blue); font-size: 16px; display: flex; align-items: center;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: #1A1A1A; color: #fff;
+    padding: 10px 18px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+    z-index: 200;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast i { font-size: 15px; }
+
+  /* Responsive */
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; }
+    .left-panel { overflow: visible; }
+    .right-panel { min-height: 600px; }
+    .log-wrap { min-height: 240px; }
+    .layout { height: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <div class="topbar-logo-mark"><span>BF</span></div>
+    Bajaj Finserv
+  </div>
+  <div class="topbar-divider"></div>
+  <span class="topbar-env">UAT · Live Stream</span>
+  <div class="topbar-right">
+    <span class="topbar-clock" id="clock">--:--:--</span>
+    <div class="topbar-live-pill" id="global-live-pill" style="display:none;">
+      <span class="dot"></span> LIVE
+    </div>
+  </div>
+</header>
+
+<!-- Share Banner -->
+<div class="share-banner" id="share-banner">
+  <i class="ti ti-share"></i>
+  <span><strong>Shareable testing page</strong> — send this URL to stakeholders to let them view and test the Bajaj live stream environment.</span>
+  <button class="share-banner-close" onclick="document.getElementById('share-banner').style.display='none'">
+    <i class="ti ti-x"></i>
+  </button>
+</div>
+
+<div class="layout" style="margin-top: 38px;">
+
+  <!-- Left Panel -->
+  <aside class="left-panel">
+
+    <!-- Platform -->
+    <div class="panel-section">
+      <div class="panel-label">Platform</div>
+      <div class="platform-tabs">
+        <button class="plat-tab active-ios" id="tab-ios" onclick="setPlatform('ios')">
+          <i class="ti ti-brand-apple"></i> iOS
+        </button>
+        <button class="plat-tab" id="tab-android" onclick="setPlatform('android')">
+          <i class="ti ti-brand-android"></i> Android
+        </button>
+      </div>
+    </div>
+
+    <!-- URL -->
+    <div class="panel-section">
+      <div class="panel-label">Target URL</div>
+      <div class="url-row">
+        <i class="ti ti-lock"></i>
+        <span>pushengineuat.bajajfinserv.in/DPAOP/live_stream_dashboard/index.html</span>
+      </div>
+    </div>
+
+    <!-- Stream State -->
+    <div class="panel-section">
+      <div class="panel-label" style="margin-bottom:8px;">Stream State</div>
+      <div class="stream-status-row">
+        <div id="stream-pill" class="stream-pill rec">
+          <span class="dot"></span> RECORDED PLAYBACK
+        </div>
+        <button class="dbg-btn blue" style="width:auto; padding:5px 12px; font-size:11px;" onclick="toggleLive()">
+          Toggle
+        </button>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="panel-section">
+      <div class="panel-label">Debug Controls</div>
+      <div class="btn-grid">
+        <button class="dbg-btn green wide" onclick="simulateLoad()">
+          <i class="ti ti-player-play"></i> Load URL in WebView
+        </button>
+        <button class="dbg-btn" onclick="simulateReload()">
+          <i class="ti ti-refresh"></i> Reload
+        </button>
+        <button class="dbg-btn amber" onclick="simulateNetwork('slow')">
+          <i class="ti ti-wifi-2"></i> Slow (3G)
+        </button>
+        <button class="dbg-btn red" onclick="simulateNetwork('offline')">
+          <i class="ti ti-wifi-off"></i> Go Offline
+        </button>
+        <button class="dbg-btn blue" onclick="simulateNetwork('online')">
+          <i class="ti ti-wifi"></i> Online
+        </button>
+        <button class="dbg-btn red" onclick="simulateError()">
+          <i class="ti ti-bug"></i> Inject Error
+        </button>
+        <button class="dbg-btn wide" onclick="copyShareLink()">
+          <i class="ti ti-link"></i> Copy share link
+        </button>
+      </div>
+    </div>
+
+    <!-- Console -->
+    <div class="log-wrap">
+      <div class="log-header">
+        <div class="log-header-left">
+          <span class="panel-label" style="margin:0;">Console</span>
+          <span class="log-count" id="log-count">0</span>
+        </div>
+        <div class="log-actions">
+          <button class="log-action-btn" onclick="exportLog()"><i class="ti ti-download"></i> Export</button>
+          <button class="log-action-btn" onclick="clearLog()"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+      <div class="log-body" id="log-body"></div>
+    </div>
+
+  </aside>
+
+  <!-- Right Panel: Device -->
+  <main class="right-panel">
+    <div class="device-outer">
+      <div class="device-meta">
+        <strong id="meta-plat">iOS 17</strong>
+        <span class="sep">·</span>
+        <span id="meta-webview">WKWebView</span>
+        <span class="sep">·</span>
+        <span id="meta-state">Idle</span>
+      </div>
+
+      <!-- iOS Device (default) -->
+      <div id="device-ios" class="device-ios">
+        <div class="ios-mute"></div>
+        <div class="ios-vol-up"></div>
+        <div class="ios-vol-dn"></div>
+        <div class="ios-side-btn"></div>
+        <div class="ios-notch">
+          <div class="ios-cam"></div>
+          <div class="ios-speaker-pill"></div>
+          <div class="ios-cam"></div>
+        </div>
+        <div class="device-screen" style="height: 560px;">
+          <div class="screen-statusbar">
+            <span>9:41</span>
+            <div class="screen-statusbar-icons">
+              <i class="ti ti-wifi"></i>
+              <i class="ti ti-signal-4g"></i>
+              <i class="ti ti-battery-3"></i>
+            </div>
+          </div>
+          <div class="webview-chrome">
+            <button class="webview-chrome-btn"><i class="ti ti-arrow-left"></i></button>
+            <div class="webview-urlbar">
+              <i class="ti ti-lock-check"></i>
+              pushengineuat.bajajfinserv.in/DPAOP/live_stream…
+            </div>
+            <button class="webview-chrome-btn" onclick="simulateReload()"><i class="ti ti-refresh"></i></button>
+          </div>
+          <div class="webview-content" id="webview-ios" style="height: calc(560px - 66px);">
+            <div class="stream-area" id="stream-area-ios">
+              <div class="stream-bg-lines"></div>
+              <div id="badge-ios" class="stream-badge-rec">● REC</div>
+              <span id="quality-ios" class="stream-quality">720p</span>
+              <div class="stream-icon-wrap">
+                <i class="ti ti-video" id="stream-icon-ios"></i>
+              </div>
+              <div id="stream-label-ios" class="stream-label">Recorded Playback</div>
+              <div id="stream-sub-ios" class="stream-sub">Stream not live · last broadcast</div>
+              <div id="net-badge-ios" class="net-badge online"><i class="ti ti-wifi"></i> Online</div>
+              <div class="stream-time" id="stream-time-ios">00:00:00</div>
+            </div>
+          </div>
+        </div>
+        <div class="ios-home"><div class="ios-pill"></div></div>
+      </div>
+
+      <!-- Android Device (hidden by default) -->
+      <div id="device-android" class="device-android" style="display:none;">
+        <div class="android-punch-hole-bar"><div class="android-cam"></div></div>
+        <div class="device-screen" style="height: 560px;">
+          <div class="screen-statusbar" style="background:#1a1a1a;">
+            <span>09:41</span>
+            <div class="screen-statusbar-icons">
+              <i class="ti ti-brand-android"></i>
+              <i class="ti ti-wifi"></i>
+              <i class="ti ti-battery-3"></i>
+            </div>
+          </div>
+          <div class="webview-chrome" style="background:#FAFAFA;">
+            <button class="webview-chrome-btn"><i class="ti ti-arrow-left"></i></button>
+            <div class="webview-urlbar">
+              <i class="ti ti-lock-check"></i>
+              pushengineuat.bajajfinserv.in/DPAOP/live_stream…
+            </div>
+            <button class="webview-chrome-btn" onclick="simulateReload()"><i class="ti ti-refresh"></i></button>
+            <button class="webview-chrome-btn"><i class="ti ti-dots-vertical"></i></button>
+          </div>
+          <div class="webview-content" id="webview-android" style="height: calc(560px - 66px);">
+            <div class="stream-area" id="stream-area-android">
+              <div class="stream-bg-lines"></div>
+              <div id="badge-android" class="stream-badge-rec">● REC</div>
+              <span id="quality-android" class="stream-quality">1080p</span>
+              <div class="stream-icon-wrap">
+                <i class="ti ti-video" id="stream-icon-android"></i>
+              </div>
+              <div id="stream-label-android" class="stream-label">Recorded Playback</div>
+              <div id="stream-sub-android" class="stream-sub">Stream not live · last broadcast</div>
+              <div id="net-badge-android" class="net-badge online"><i class="ti ti-wifi"></i> Online</div>
+              <div class="stream-time" id="stream-time-android">00:00:00</div>
+            </div>
+          </div>
+        </div>
+        <div class="android-nav">
+          <button class="android-nav-btn triangle" title="Back"></button>
+          <button class="android-nav-btn circle" title="Home"></button>
+          <button class="android-nav-btn square" title="Recents"></button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><i class="ti ti-check"></i> <span id="toast-msg"></span></div>
+
+<script>
+  let platform = 'ios';
+  let isLive = false;
+  let isLoaded = false;
+  let netState = 'online';
+  let logCount = 0;
+  let streamSeconds = 0;
+  let streamTimer = null;
+
+  function ts() {
+    return new Date().toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  }
+
+  function log(msg, type) {
+    type = type || 'dbg';
+    logCount++;
+    document.getElementById('log-count').textContent = logCount;
+    const body = document.getElementById('log-body');
+    const e = document.createElement('div');
+    e.className = 'log-entry ' + (type === 'err' ? 'err' : type === 'ok' ? 'ok' : type === 'warn' ? 'warn' : type === 'info' ? 'info' : '');
+    const levelMap = { err:'ERR', ok:'OK', warn:'WARN', info:'INFO', dbg:'DBG' };
+    e.innerHTML = '<span class="log-ts">' + ts() + '</span><span class="log-level ' + type + '">' + (levelMap[type]||'DBG') + '</span><span class="log-msg ' + (type==='err'?'err':type==='warn'?'warn':'') + '">' + msg + '</span>';
+    body.appendChild(e);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function clearLog() {
+    document.getElementById('log-body').innerHTML = '';
+    logCount = 0;
+    document.getElementById('log-count').textContent = '0';
+    log('Log cleared.', 'dbg');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2500);
+  }
+
+  function exportLog() {
+    const entries = document.querySelectorAll('.log-entry');
+    let txt = 'Bajaj App Test Log — ' + new Date().toISOString() + '\n';
+    txt += 'Platform: ' + (platform === 'ios' ? 'iOS (WKWebView)' : 'Android (WebView)') + '\n\n';
+    entries.forEach(function(e) {
+      const ts = e.querySelector('.log-ts') ? e.querySelector('.log-ts').textContent : '';
+      const lv = e.querySelector('.log-level') ? e.querySelector('.log-level').textContent : '';
+      const msg = e.querySelector('.log-msg') ? e.querySelector('.log-msg').textContent : '';
+      txt += '[' + ts + '] [' + lv + '] ' + msg + '\n';
+    });
+    const blob = new Blob([txt], {type:'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'bajaj-test-log-' + Date.now() + '.txt';
+    a.click();
+    showToast('Log exported');
+  }
+
+  function copyShareLink() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(function() {
+      showToast('Share link copied!');
+    }).catch(function() {
+      showToast('Copy: ' + url);
+    });
+  }
+
+  function setMeta(state) {
+    document.getElementById('meta-state').textContent = state;
+    document.getElementById('meta-plat').textContent = platform === 'ios' ? 'iOS 17' : 'Android 14';
+    document.getElementById('meta-webview').textContent = platform === 'ios' ? 'WKWebView' : 'WebView';
+  }
+
+  function setPlatform(p) {
+    platform = p;
+    document.getElementById('tab-ios').className = 'plat-tab' + (p==='ios' ? ' active-ios' : '');
+    document.getElementById('tab-android').className = 'plat-tab' + (p==='android' ? ' active-android' : '');
+    document.getElementById('device-ios').style.display = p === 'ios' ? '' : 'none';
+    document.getElementById('device-android').style.display = p === 'android' ? '' : 'none';
+    setMeta('Idle');
+    log('Switched to ' + (p === 'ios' ? 'iOS simulator — WKWebView' : 'Android simulator — WebView (Chromium)'), 'info');
+    updateStreamUI();
+  }
+
+  function showLoading(webviewId) {
+    const wv = document.getElementById(webviewId);
+    let ol = wv.querySelector('.loading-overlay');
+    if (!ol) {
+      ol = document.createElement('div');
+      ol.className = 'loading-overlay';
+      ol.innerHTML = '<div class="spinner"></div><div class="loading-text">Loading WebView…</div>';
+      wv.appendChild(ol);
+    }
+    ol.style.display = 'flex';
+    return ol;
+  }
+
+  function hideOverlays(webviewId) {
+    const wv = document.getElementById(webviewId);
+    wv.querySelectorAll('.loading-overlay, .error-overlay').forEach(function(el) { el.style.display = 'none'; });
+  }
+
+  function showError(webviewId, errMsg, errCode) {
+    const wv = document.getElementById(webviewId);
+    hideOverlays(webviewId);
+    let ol = wv.querySelector('.error-overlay');
+    if (!ol) {
+      ol = document.createElement('div');
+      ol.className = 'error-overlay';
+      wv.appendChild(ol);
+    }
+    ol.innerHTML = '<i class="ti ti-alert-circle"></i><div class="error-title">' + errMsg + '</div><div class="error-code">' + errCode + '</div>';
+    ol.style.display = 'flex';
+  }
+
+  function simulateLoad() {
+    const wvId = 'webview-' + platform;
+    const ol = showLoading(wvId);
+    setMeta('Loading…');
+    log('[' + (platform==='ios'?'WKWebView':'WebView') + '] webView:didStartProvisionalNavigation', 'info');
+    log('GET https://pushengineuat.bajajfinserv.in/DPAOP/live_stream_dashboard/index.html', 'dbg');
+    setTimeout(function() {
+      ol.style.display = 'none';
+      isLoaded = true;
+      log('[' + (platform==='ios'?'WKWebView':'WebView') + '] webView:didFinishNavigation → HTTP 200', 'ok');
+      log('DOM content loaded · JS bridge initialized · postMessage listener active', 'ok');
+      log('User-Agent: ' + (platform==='ios' ? 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15' : 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/120.0'), 'dbg');
+      setMeta('Loaded · 200');
+      updateStreamUI();
+      startStreamTimer();
+    }, 1400);
+  }
+
+  function simulateReload() {
+    if (!isLoaded) { simulateLoad(); return; }
+    const wvId = 'webview-' + platform;
+    const ol = showLoading(wvId);
+    log('Reload triggered', 'info');
+    streamSeconds = 0;
+    setTimeout(function() {
+      ol.style.display = 'none';
+      log('[' + (platform==='ios'?'WKWebView':'WebView') + '] didFinishNavigation → HTTP 200', 'ok');
+      setMeta('Loaded · 200');
+    }, 900);
+  }
+
+  function startStreamTimer() {
+    if (streamTimer) clearInterval(streamTimer);
+    streamTimer = setInterval(function() {
+      if (!isLoaded) return;
+      streamSeconds++;
+      const h = String(Math.floor(streamSeconds/3600)).padStart(2,'0');
+      const m = String(Math.floor((streamSeconds%3600)/60)).padStart(2,'0');
+      const s = String(streamSeconds%60).padStart(2,'0');
+      const timeStr = h+':'+m+':'+s;
+      ['ios','android'].forEach(function(p) {
+        const el = document.getElementById('stream-time-'+p);
+        if (el) el.textContent = timeStr;
+      });
+    }, 1000);
+  }
+
+  function toggleLive() {
+    if (!isLoaded) { log('Load the URL first.', 'warn'); return; }
+    isLive = !isLive;
+    updateStreamUI();
+    if (isLive) {
+      log('Stream state → LIVE · HLS manifest requested', 'ok');
+      log('Video element attached · autoplay policy granted', 'ok');
+      document.getElementById('global-live-pill').style.display = 'flex';
+    } else {
+      log('Stream state → RECORDED PLAYBACK · VOD fallback loaded', 'warn');
+      document.getElementById('global-live-pill').style.display = 'none';
+    }
+  }
+
+  function updateStreamUI() {
+    ['ios', 'android'].forEach(function(p) {
+      const badge = document.getElementById('badge-'+p);
+      const label = document.getElementById('stream-label-'+p);
+      const sub = document.getElementById('stream-sub-'+p);
+      const icon = document.getElementById('stream-icon-'+p);
+      if (!badge) return;
+      if (isLive) {
+        badge.className = 'stream-badge-live';
+        badge.innerHTML = '<span class="dot"></span> LIVE';
+        label.textContent = 'Live Stream Active';
+        sub.textContent = 'Bajaj Finserv · broadcast in progress';
+        icon.className = 'ti ti-radio';
+      } else {
+        badge.className = 'stream-badge-rec';
+        badge.textContent = '● REC';
+        label.textContent = 'Recorded Playback';
+        sub.textContent = 'Stream not live · last broadcast';
+        icon.className = 'ti ti-video';
+      }
+    });
+    const pill = document.getElementById('stream-pill');
+    if (isLive) {
+      pill.className = 'stream-pill live';
+      pill.innerHTML = '<span class="dot"></span> LIVE';
+    } else {
+      pill.className = 'stream-pill rec';
+      pill.innerHTML = '<span class="dot"></span> RECORDED PLAYBACK';
+    }
+  }
+
+  function simulateError() {
+    const errors = [
+      { msg: 'NSURLErrorDomain -1001 · The request timed out', code: 'iOS · WKWebView · kCFErrorDomainCFNetwork', type: 'err' },
+      { msg: 'net::ERR_CONNECTION_TIMED_OUT', code: 'Android · WebView · Chromium net error -118', type: 'err' },
+      { msg: 'WKWebViewErrorDomain -999 · Frame load interrupted', code: 'iOS · WKNavigationDelegate · didFail', type: 'err' },
+      { msg: 'Mixed content blocked: HTTP resource over HTTPS origin', code: 'Content-Security-Policy violation', type: 'err' },
+      { msg: 'SecurityError: cross-origin frame access blocked', code: 'CORS · No Access-Control-Allow-Origin header', type: 'err' },
+      { msg: 'JavascriptInterface injection failed', code: 'Android · WebView.addJavascriptInterface returned null', type: 'err' },
+    ];
+    const e = errors[Math.floor(Math.random() * errors.length)];
+    log(e.msg, e.type);
+    showError('webview-' + platform, e.msg, e.code);
+    setMeta('Error');
+  }
+
+  function simulateNetwork(type) {
+    netState = type;
+    const nbIos = document.getElementById('net-badge-ios');
+    const nbAndroid = document.getElementById('net-badge-android');
+    function setNB(el) {
+      if (!el) return;
+      if (type === 'online') { el.className = 'net-badge online'; el.innerHTML = '<i class="ti ti-wifi"></i> Online'; }
+      else if (type === 'slow') { el.className = 'net-badge slow'; el.innerHTML = '<i class="ti ti-wifi-2"></i> 3G — Slow'; }
+      else { el.className = 'net-badge offline'; el.innerHTML = '<i class="ti ti-wifi-off"></i> Offline'; }
+    }
+    setNB(nbIos); setNB(nbAndroid);
+    if (type === 'online') {
+      log('Network restored · connection online', 'ok');
+      setMeta('Online');
+    } else if (type === 'slow') {
+      log('Network throttled → 3G (750 kbps / RTT 250ms)', 'warn');
+      setMeta('Slow network');
+    } else {
+      log('Network lost · device offline', 'err');
+      log('[' + (platform==='ios'?'WKWebView':'WebView') + '] didFailNavigation · NSURLErrorNotConnectedToInternet', 'err');
+      setMeta('Offline');
+      if (isLoaded) showError('webview-' + platform, 'No internet connection', 'NSURLErrorDomain -1009');
+    }
+  }
+
+  // Clock
+  setInterval(function() {
+    document.getElementById('clock').textContent = ts();
+  }, 1000);
+  document.getElementById('clock').textContent = ts();
+
+  // Init log
+  log('Bajaj App Testing Environment ready.', 'info');
+  log('Target: https://pushengineuat.bajajfinserv.in/DPAOP/live_stream_dashboard/index.html', 'dbg');
+  log('Select a platform and press "Load URL in WebView" to begin.', 'dbg');
+  setMeta('Idle');
+</script>
+</body>
+</html>
